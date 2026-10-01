@@ -1,8 +1,78 @@
 # Notes for coding agents
 
 README.md says what the student has to do and why. `PLAN.md` gives the steps
-with commands and a check for each. This file says how to run things here, what
-the given tools do, and what is the student's to decide.
+with commands and a check for each. This file says how to set things up and
+run them, what the given tools do, and what is the student's to decide.
+
+The student works in VS Code with Cline and may never have used a terminal. Run
+the commands yourself, and tell the student only what they have to do with
+their own hands, such as logging in to a website.
+
+## First setup
+
+The template is https://github.com/jdasam/mas1004-assignment1. The student has
+a GitHub account. Each step below checks first, so the whole setup can be
+started again after VS Code is reopened.
+
+1. Check the computer. PyTorch has no packages for Intel Macs or for Windows on
+   an ARM processor, and needs macOS 14 or later on Apple Silicon. On macOS
+   look at `uname -m` and `sw_vers -productVersion`, on Windows at
+   `$env:PROCESSOR_ARCHITECTURE` in PowerShell. On those computers, tell the
+   student that tests and training will run on Colab (README, Google Colab),
+   do steps 2 to 5, and skip step 6.
+2. git: `git --version`. If it is missing, on Windows
+   `winget install --id Git.Git -e --source winget`, on macOS
+   `xcode-select --install`, where the student presses Install in the window
+   that opens.
+3. GitHub CLI: `gh --version`. If it is missing, on Windows
+   `winget install --id GitHub.cli -e --source winget`, on macOS
+   `brew install gh` if Homebrew is there, or else the macOS package from
+   https://github.com/cli/cli/releases/latest. On Windows, programs installed
+   with winget are found only after VS Code is quit and reopened.
+4. Log in: `gh auth status`. If not logged in,
+   `gh auth login --hostname github.com --git-protocol https --web`. It shows a
+   one-time code and opens the browser, where the student enters the code and
+   approves. Then `gh auth setup-git`, so that `git push` works. If logging in
+   goes in circles for more than ten minutes, stop and let the student press
+   "Use this template" on the template's GitHub page, then clone that copy
+   with git.
+5. Make the student's copy. If the student already has one from class, do not
+   make another: use "Updating the given files" below in that folder. Ask the
+   student for a name (suggest `mas1004-assignment1`) and a place for the
+   folder (suggest their Documents folder), go there, and run
+   `gh repo create <name> --template jdasam/mas1004-assignment1 --public --clone`.
+   It has to be public: GitHub Pages is free only for public repositories, and
+   Colab reads the code from it without logging in.
+6. In the new folder, install uv as described under "Running Python in this
+   repository", and run `uv run pytest tests/test_export.py`. The first run
+   takes a few minutes. Six tests pass; the others fail until the student's
+   functions are written.
+7. Tell the student where the folder is, and to open it in VS Code (File, Open
+   Folder) and use Cline there from now on.
+
+## Updating the given files
+
+In the student's repository folder:
+
+```
+git remote add template https://github.com/jdasam/mas1004-assignment1.git
+git fetch template
+git checkout template/main -- README.md PLAN.md AGENTS.md CLAUDE.md .gitignore .python-version pyproject.toml uv.lock requirements.txt pytest.ini assignment1_colab.ipynb imagenet_classes.txt src/collect.py src/clean.py src/check.py src/run.py src/export_web.py docs/index.html docs/app.js tests short_report long_report/mas1004.sty
+git commit -m "Update the given files"
+git push
+```
+
+Skip the first line if the remote `template` already exists. This replaces only
+files the student does not write, and does not touch `data/` or `results/`.
+
+- If there is no `long_report` folder yet, also run
+  `git checkout template/main -- long_report` once. Never do that after the
+  student has started filling in `long_report/long_report.tex`, because it
+  replaces it.
+- If `src/data.py` has no `prepare_image` in it, the copy is from before the
+  starter code changed to ResNet18. Tell the student: it needs a new copy made
+  with "First setup", and the `data/` folder moved into it.
+- After an update, run `uv run pytest tests/test_export.py` again.
 
 ## Running Python in this repository
 
@@ -53,7 +123,8 @@ has decided.
   and remove the files the student names, with the reason the student gives.
 - In Problem 7, the guesses about what the model uses and the image changes
   that test them. See the section on Problem 7 below.
-- The short report. Do not write, edit, translate or tidy it, in any language.
+- The short report. Do not write, edit, translate or tidy it, in any language,
+  and do not touch the files in `short_report/`.
 
 ## Folders
 
@@ -75,6 +146,14 @@ has decided.
 ```
 uv run python src/collect.py --classes "espresso cup,wine glass,paper coffee cup" --n 150
 ```
+
+Before downloading, check the student's categories against
+`imagenet_classes.txt`, the 1,000 categories ResNet18 already tells apart, and
+tell the student if one of theirs is in it or very close to one. The student
+decides what to do about it. The cup categories in the examples in these files
+(espresso cup, wine glass, paper coffee cup) only show how the commands work.
+They are close to ImageNet categories (espresso, cup, coffee mug, goblet, red
+wine), so do not suggest them.
 
 It saves into `data/raw/<category>/`. Then copy `data/raw` to `data/clean`
 once. If a category comes back with fewer than about 50 images, the search
@@ -139,8 +218,9 @@ uv run python src/check.py --compare run clean
 
 ## Problem 5: images from a new source
 
-- At least 5 per category in `data/new_images/<category>/`, from a source that
-  cannot overlap with the downloads. Another web search does not count.
+- At least 5 per category in `data/new_images/<category>/`, from a source the
+  student is sure the download could not have found. Images from the web are
+  fine if that is true of them.
 - JPEG or PNG only. The code cannot read HEIC (`.heic`, `.heif`), and
   `check.py` reports any it finds. Convert them to JPEG when the student asks.
 - `uv run python src/clean.py overlap` compares every new image with every
@@ -171,11 +251,22 @@ not work, and the webcam only works on `https://` pages and on `localhost`.
   again.
 - `docs/model.onnx` is about 45 MB, and every committed version stays in the
   history. Export and commit only the model to publish.
-- After pushing, check on the GitHub website that `docs/model.onnx` and
-  `docs/model.json` are really in the repository. Without them the published
-  page cannot load the model.
-- If `gh auth login` goes in circles for more than ten minutes, stop and let
-  the student use the GitHub website.
+- After pushing, check that `docs/model.onnx` and `docs/model.json` are
+  really in the repository on GitHub, for example with
+  `gh api "repos/{owner}/{repo}/contents/docs" --jq '.[].name'`. Without them the
+  published page cannot load the model.
+- Turn on GitHub Pages from branch `main`, folder `/docs`, and give the student
+  the address. With the GitHub CLI:
+
+```
+echo '{"source":{"branch":"main","path":"/docs"}}' | gh api -X POST "repos/{owner}/{repo}/pages" --input -
+gh api "repos/{owner}/{repo}/pages" --jq .html_url
+```
+
+  If Pages is already on, the first command fails and the second still gives
+  the address. If the CLI does not work, the student turns it on on the
+  website: the repository, Settings, Pages, Source "Deploy from a branch",
+  Branch `main`, Folder `/docs`, Save. The page appears a minute or two later.
 
 ## Problem 7 and Step 18: what the model looks at
 
@@ -208,6 +299,26 @@ neural network is. It holds, in order:
 
 Every number in it must be one that code printed in this repository. Do not
 estimate, round differently, or fill in a number that was not printed.
+
+It is written in `long_report/long_report.tex`, which already has a section
+for every Problem. Red `\fillin{...}` marks what is still missing; replace each
+one, and remove any that do not apply.
+
+- Copy the pictures it uses from `results/` (which is not in git) into
+  `long_report/figures/`, and include them with `\picturefile{figures/...}`.
+  For Problem 7, `\sidebyside{original}{text}{changed}{text}` puts an original
+  next to its changed version.
+- Outputs come from `results/`. `run.py` saves everything it prints in
+  `results/<tag>_output.txt`, and the PLAN saves the other outputs with
+  `| tee results/overlap.txt`, `clean_count.txt`, `compare.txt` and
+  `check.txt`. Copy them into `long_report/outputs/` and include each with
+  `\outputfile{outputs/...}`, which prints it exactly as it is. Do not retype
+  output by hand. If one of the measuring outputs is missing, run its command
+  again with `| tee`. A training run's output cannot be made again without
+  training again, which gives different numbers.
+- Do not change `mas1004.sty`.
+- It compiles with XeLaTeX. If XeLaTeX is not installed here, do not install
+  it: the student compiles the folder on Overleaf.
 
 ## When something goes wrong
 

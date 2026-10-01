@@ -30,6 +30,10 @@ projects. Keep the sentences. They go in your report.
 Also write down what you think the model will use to tell them apart. Step 18
 tests it.
 
+Then have your agent check them against `imagenet_classes.txt`, the 1,000
+categories ResNet18 already tells apart. If one of yours is in it, the model
+already knows it, and training on it adds almost nothing.
+
 Check: you can say out loud what visible difference the model is supposed to
 find between them, and you know where you will get images of them that cannot
 be among your downloads (Step 4).
@@ -62,14 +66,19 @@ Check: you can name three kinds of junk that came back.
 At least five per category, into `data/new_images/<category>/`, with the same
 folder names as `data/clean`. They must come from a source you can be sure is
 not in your downloads: your own photos, a friend's photos, frames from a video
-you recorded. Not another web search. Save them as JPEG or PNG, not the HEIC
-files an iPhone makes by default (README, Problem 5). If you take photos
+you recorded, or images from the web that you are sure your download could not
+have found. Save them as JPEG or PNG, not the HEIC files an iPhone makes by
+default (README, Problem 5). If you take photos
 yourself, take them in different places and different light. If you take them
 all on the same desk in one evening, Problems 4 and 5 have nothing to say.
 
 ```
-uv run python src/clean.py overlap
+uv run python src/clean.py overlap | tee results/overlap.txt
 ```
+
+The `| tee results/...` at the end shows the output and also saves it in
+`results/`, for the long report. Run it again after you take out any near
+copies, so that the saved output is the final one.
 
 Check: every category has a folder in `data/new_images/` with at least five
 images in it, `clean.py overlap` finds no near copies, and you can say in one
@@ -139,7 +148,8 @@ ones up to Step 15 in the notebook, which takes your code from GitHub. When a
 step asks you to write code, write it here, push it, and bring it over with
 section 9 of the notebook. Come back here for Step 16.
 
-Look at `results/run_curves.png` and `results/run_confusion.png`.
+Look at `results/run_curves.png` and `results/run_confusion.png`. Everything
+`run.py` prints is also saved in `results/run_output.txt`, for the long report.
 
 Check: it finished, it printed a train accuracy and a test accuracy, and the
 loss curve goes down. If the two accuracies are identical, look at your split
@@ -183,9 +193,13 @@ uv run python src/clean.py remove <class>/<file> <class>/<file> --reason "<which
 ```
 
 Then go back through the sheets from Step 3 for anything the suspect list did
-not catch.
+not catch. When you are done:
 
-Check: `uv run python src/clean.py count` prints how many you removed from
+```
+uv run python src/clean.py count | tee results/clean_count.txt
+```
+
+Check: `clean.py count` prints how many you removed from
 each class and why, and you know how many of the first 20 suspects in each
 class you removed.
 
@@ -193,7 +207,7 @@ class you removed.
 
 ```
 uv run python src/run.py --tag clean
-uv run python src/check.py --compare run clean
+uv run python src/check.py --compare run clean | tee results/compare.txt
 ```
 
 Check: you have the test accuracy before and after, and the accuracy on your
@@ -214,7 +228,7 @@ and what they really are.
 
 ```
 uv run python src/export_web.py --tag clean
-uv run python src/check.py
+uv run python src/check.py | tee results/check.txt
 ```
 
 Check: `check.py` says the exported model agrees with Python, and reports an
@@ -239,26 +253,16 @@ fix `prepare_image`, and then train and export again.
 
 ## Step 17. Publish it
 
-```
-git add -A
-git commit -m "trained model and demo"
-git push
-```
+Ask your agent to commit and push, and to turn on GitHub Pages (AGENTS.md,
+Problem 6). It gives you the address.
 
 `docs/model.onnx` is about 45 MB, so this push takes a while. Do it once, with
 the model you want to hand in, not after every experiment.
 
-Then on the GitHub website: your repository, Settings, Pages, Source "Deploy
-from a branch", Branch `main`, Folder `/docs`, Save.
-
-Your agent can do the git part for you. If it goes in circles over `gh auth
-login` for more than ten minutes, stop it and use the website. Getting the
-command line tool authenticated is not what this assignment is about.
-
 Check: you opened the address on your phone, away from your own wifi, and it
-worked. If the page says it could not load the model, look at your repository
-on the GitHub website and see whether `docs/model.onnx` and `docs/model.json`
-are actually there.
+worked. If the page says it could not load the model, have your agent check
+whether `docs/model.onnx` and `docs/model.json` are really in your repository
+on GitHub.
 
 ## Step 18. Find out what your model looks at
 
@@ -290,15 +294,25 @@ Go back through the "Write this down" boxes in README.md in order, with your
 agent. You should already have every number and every picture you need, from
 the checks above.
 
-Check: every number in it is one you saw printed by code you ran.
+Your agent fills in `long_report/long_report.tex` (AGENTS.md says how). It
+copies the pictures it needs from `results/` into `long_report/figures/`, and
+the saved outputs, `results/*.txt`, into `long_report/outputs/`. To make the
+PDF, compress the `long_report` folder into a zip, and on Overleaf choose New
+Project, Upload Project, set the compiler to XeLaTeX, and Recompile.
+
+Check: no red text is left in the PDF, and every number in it is one you saw
+printed by code you ran.
 
 ## Step 20. Write the short report
 
 Close the agent. One page, by yourself, in Korean if that is your first
-language. The four questions are in README.md.
+language. Open the English or the Korean template on Overleaf with the links
+under "The short report" in README.md, and write freely about what you
+learned: which topic you chose and why, how the assignment went, and what you
+learned.
 
-This is the last step for a reason. You cannot answer question 2 or 4 until you
-have seen your model fail, and you cannot answer question 3 unless you were
-paying attention the whole way through.
+This is the last step because you can only write it once you have been
+through all of the others.
 
-Check: it fits on one page, and you wrote all of it.
+Check: it fits on one page, with no red note at the end, and you wrote all
+of it.

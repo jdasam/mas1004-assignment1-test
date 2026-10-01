@@ -2,7 +2,7 @@
 
 MAS1004 Data & AI, 2026 Fall
 
-Due: Friday 16 October, 22:00, on LMS.
+Due: Friday 16 October, 22:00, on Cyber Campus (LMS).
 
 ## What you do
 
@@ -26,14 +26,74 @@ Two things matter most:
 espresso cups, wine glasses and paper coffee cups apart has 3 categories. You
 do not run three separate projects on different topics.
 
-## What you hand in, on LMS
+## What you hand in, on Cyber Campus (LMS)
 
-1. The address of your web demo. The model runs inside the page, so it works
-   without a server, and nobody's photos are sent anywhere.
-2. The address of your code repository.
-3. The short report: one page, written by you.
-4. The long report: written with your agent.
-5. `data/new_images/` as a zip (Problem 5).
+1. `links.txt`, a text file with the address of your web demo and the address
+   of your code repository, in this form:
+
+   ```
+   demo: https://<your name>.github.io/<your repository>/
+   code: https://github.com/<your name>/<your repository>
+   ```
+
+   The model runs inside the web page, so the demo works without a server, and
+   nobody's photos are sent anywhere.
+2. The short report as a PDF: one page, written by you, from the template in
+   `short_report/`.
+3. The long report as a PDF: written with your agent, from the template in
+   `long_report/`.
+
+Both templates are LaTeX files that you compile on Overleaf
+(https://www.overleaf.com), with a free account. The sections "The short
+report" and "The long report" at the end of this file say how.
+
+## Getting started
+
+You need two things of your own: VS Code with Cline, as set up in class, and a
+GitHub account. Make the account at https://github.com/signup if you do not
+have one. Your agent does the rest.
+
+In VS Code, open Cline and give it this request:
+
+```
+Set up MAS1004 Assignment 1 for me. Follow the section "First setup" in
+https://raw.githubusercontent.com/jdasam/mas1004-assignment1/main/AGENTS.md
+```
+
+It makes your own copy of this repository on your GitHub account, downloads it
+to your computer, and installs what the assignment needs. On the way it asks
+you to log in to GitHub in your browser. At the end it runs the tests on the
+code you were given, six of them pass, and it tells you to open the new folder
+in VS Code. Work in that folder, with Cline, from then on.
+
+If you already made your copy in class, open its folder in VS Code and give
+Cline this request instead. Use the same request whenever the given files
+change. It does not touch the functions you wrote or your images.
+
+```
+Update the given files in this repository from the template. Follow the
+section "Updating the given files" in
+https://raw.githubusercontent.com/jdasam/mas1004-assignment1/main/AGENTS.md
+```
+
+Some computers cannot run this assignment, because PyTorch has no packages for
+them: Intel Macs, Windows laptops with an ARM processor (Snapdragon), and Macs
+older than macOS 14. Your agent tells you if yours is one of them. Then you
+train on Colab.
+
+### Google Colab
+
+Colab gives you a GPU for free, and training ResNet18 is much faster on a GPU.
+Open the notebook directly in Colab with this link:
+https://colab.research.google.com/github/jdasam/mas1004-assignment1/blob/main/assignment1_colab.ipynb
+
+Use Colab only to run things: downloading, training, cleaning and checking.
+Write your code on your own computer with your agent, and push it. The
+notebook takes your code from your repository on GitHub, so push before you
+run it, and do not edit code in Colab: the notebook replaces it with what is on
+GitHub every time it updates. When the training is done, you download the
+model files from Colab and publish the page from your own computer
+(Problem 6).
 
 ## How you work
 
@@ -60,87 +120,10 @@ wrote.
 
 - Every number in your reports has to come from output that you saw printed
   by code you ran. Agents sometimes report numbers they never measured.
-- When the agent says it fixed something, run the test yourself and see it
-  pass.
+- When the agent says it fixed something, have it run the test, and look at
+  the result yourself.
 - You make the guesses and choose the image changes in Problem 7, and you
   write the short report. The agent makes only the image changes you ask for.
-
-## Getting your own copy
-
-This repository is a template, so you do not fork it and you do not work in it.
-
-1. Make an account at https://github.com if you do not have one.
-2. Open https://github.com/jdasam/mas1004-assignment1
-3. Press "Use this template", then "Create a new repository".
-4. Give it a name and keep it public. Public is what makes GitHub Pages free.
-5. `git clone` your new repository onto your own computer.
-
-Everything you do from now on happens in your copy, and you hand in its
-address. Commit and push as you go.
-
-### Updating the given files
-
-When the given files change, take them from the template into your copy. In
-your repository folder:
-
-```
-git remote add template https://github.com/jdasam/mas1004-assignment1.git
-git fetch template
-git checkout template/main -- README.md PLAN.md AGENTS.md CLAUDE.md .gitignore .python-version pyproject.toml uv.lock requirements.txt pytest.ini assignment1_colab.ipynb src/collect.py src/clean.py src/check.py src/run.py src/export_web.py docs/index.html docs/app.js tests
-git commit -m "Update the given files"
-```
-
-The first line is needed only the first time. This replaces only the files
-named on the third line, none of the ones you write, and it does not touch
-your images.
-
-If your `src/data.py` has no `prepare_image` in it, your copy is from before
-the starter code changed to ResNet18. Make a new copy from the template and
-move your `data/` folder into it.
-
-## Setting up
-
-On your own computer, use uv. It installs the right version of Python and of
-every package into a `.venv` folder inside your repository, the same on
-Windows, macOS and Linux. Install it once. On macOS, in Terminal:
-
-```
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-On Windows, in PowerShell:
-
-```
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-Close the terminal, and quit and reopen VS Code. Then, in your repository
-folder:
-
-```
-uv run pytest tests/test_export.py
-```
-
-The first time takes a few minutes. Six tests should pass. They cover code
-that was given to you, so if they fail, ask for help before you go on.
-
-Intel Macs and Windows laptops with an ARM processor (Snapdragon) cannot run
-PyTorch, and Macs with Apple Silicon need macOS 14 or later. On those
-computers, use Colab.
-
-### Google Colab
-
-Colab gives you a GPU for free, and training ResNet18 is much faster on a GPU.
-Open the notebook directly in Colab with this link:
-https://colab.research.google.com/github/jdasam/mas1004-assignment1/blob/main/assignment1_colab.ipynb
-
-Use Colab only to run things: downloading, training, cleaning and checking.
-Write your code on your own computer with your agent, and push it. The
-notebook takes your code from your repository on GitHub, so push before you
-run it, and do not edit code in Colab: the notebook replaces it with what is on
-GitHub every time it updates. When the training is done, you download the
-model files from Colab and publish the page from your own computer
-(Problem 6).
 
 ---
 
@@ -149,13 +132,21 @@ model files from Colab and publish the page from your own computer
 Choose 3 to 5 categories, as described at the top. The downloader searches the
 web for each category and saves the images, and you work on a copy of them.
 
-Two things to think about when you choose. In Problem 5 you test the model on
-images from a source that cannot overlap with your downloads, such as your own
-photos, so choose things you can find such images of. And the model can only
-use what is visible in the picture: an expensive wine glass and a cheap one
-that look the same cannot be told apart by any model. Because you start from a
-network that has already seen 1.2 million photos, categories that differ in
-small details, such as similar breeds of dog, are worth trying.
+Three things to think about when you choose.
+
+- Your categories should not be ImageNet categories. `imagenet_classes.txt`
+  lists all 1,000 of them. ResNet18 has already learned to tell those apart, so
+  training it on them adds almost nothing. Things that ImageNet calls by one
+  name are a good place to look: ImageNet has a category for pizza, but not
+  for Neapolitan, New York and Chicago pizza. The cup categories used as
+  examples in this README are not a good choice for this reason: ImageNet
+  already has espresso, cup, coffee mug, goblet and red wine. They are there
+  only to show how things work.
+- In Problem 5 you test the model on images from a source that cannot overlap
+  with your downloads, such as your own photos, so choose things you can find
+  such images of.
+- The model can only use what is visible in the picture: an expensive wine
+  glass and a cheap one that look the same cannot be told apart by any model.
 
 Write this down:
 - Why these categories? Why do you care?
@@ -242,9 +233,9 @@ the model on images from somewhere else.
 Collect at least 5 images per category from a source that you can be sure is
 not in your downloads: photographs you take yourself, photographs a friend
 took, frames from a video you recorded, or photos from your phone's gallery.
-Another search engine or another search phrase does not work, because the same
-photos are copied onto every shopping site. Collect them early, because
-Problem 4 uses them too.
+Images from the web are fine too, as long as you are sure the search that made
+your downloads could not have found them. The overlap check compares your new
+images with your downloads and shows any near copies.
 
 Save them as JPEG or PNG. An iPhone saves photos as HEIC unless you set
 Settings, Camera, Formats to Most Compatible, and the code here cannot read
@@ -265,15 +256,13 @@ Write this down:
 
 ## Problem 6. Put the demo on the web
 
-Export your cleaned model to the page and open it on your own computer first.
-If you trained on Colab, copy the three model files from Colab first (the last
-section of the notebook). The badge at the top of the page has to be green. A
-red badge means the page prepares images differently from your
-`prepare_image`, and every answer on it is wrong.
+Ask your agent to export your cleaned model to the page and open the page on
+your own computer. If you trained on Colab, bring the three model files from
+Colab first (the last section of the notebook). The badge at the top of the
+page has to be green. A red badge means the page prepares images differently
+from your `prepare_image`, and every answer on it is wrong.
 
-Then commit and push, and turn on GitHub Pages: your repository on the GitHub
-website, Settings, Pages, Source "Deploy from a branch", Branch `main`, Folder
-`/docs`, Save. Your demo appears at
+Then ask your agent to push and to turn on GitHub Pages. Your demo appears at
 `https://<your name>.github.io/<your repository>/` after a minute or two.
 Open it on your phone to check that it works away from your computer.
 
@@ -339,19 +328,22 @@ afterwards. If Korean is your first language, write it in Korean. This is the
 one piece of work in this course where neither your English nor your polish
 counts for anything, and what you actually think counts for everything.
 
-Four questions:
+Write freely about what you learned from this assignment:
 
-1. What does your model tell apart, and why did you pick that?
-2. The worst mistake it makes. Which image, what did it answer, and what do
-   you think made it answer that?
-3. One thing your coding agent got wrong. What did it claim, what was actually
-   true, and what made you look?
-4. If you started again tomorrow, what would you do differently?
+- which topic you chose, and why
+- how the assignment went
+- what you learned
 
-On the third question: everybody's agent gets something wrong. It writes code
-that runs and does the wrong thing, or it reports an accuracy it never
-measured, or it quietly changes something you told it not to. "Nothing went
-wrong" will be read as "I did not check".
+Write it on Overleaf, from the template. Log in to Overleaf, then open one of
+these links. Each makes a new project of your own with the template in it:
+
+- [English template](https://www.overleaf.com/docs?engine=xelatex&main_document=short_report_en.tex&snip_uri%5B%5D=https://raw.githubusercontent.com/jdasam/mas1004-assignment1/main/short_report/short_report_en.tex&snip_name%5B%5D=short_report_en.tex&snip_uri%5B%5D=https://raw.githubusercontent.com/jdasam/mas1004-assignment1/main/short_report/mas1004.sty&snip_name%5B%5D=mas1004.sty)
+- [Korean template](https://www.overleaf.com/docs?engine=xelatex&main_document=short_report_ko.tex&snip_uri%5B%5D=https://raw.githubusercontent.com/jdasam/mas1004-assignment1/main/short_report/short_report_ko.tex&snip_name%5B%5D=short_report_ko.tex&snip_uri%5B%5D=https://raw.githubusercontent.com/jdasam/mas1004-assignment1/main/short_report/mas1004.sty&snip_name%5B%5D=mas1004.sty)
+
+If a link does not work, ask your agent to compress the `short_report` folder
+into a zip, and on Overleaf choose New Project, Upload Project. Either way, the compiler has to
+be XeLaTeX (Menu, Compiler). Do not use Overleaf's AI tools on this report. If
+it runs past one page, a red note appears at the end of the PDF.
 
 ## The long report
 
@@ -359,6 +351,15 @@ As long as you like, written with your agent. It holds everything the "Write
 this down" boxes ask for, in order, with the pictures and the complete output
 of the checker. Every number in it has to be one you saw printed by code you
 ran.
+
+The template is `long_report/long_report.tex`. Your agent fills it in, in your
+repository: it copies the pictures into `long_report/figures/` and saves the
+output of each command into `long_report/outputs/`, from where the report
+prints it exactly as it was. Red text in the PDF is what is still missing.
+
+To make the PDF, ask your agent to compress the `long_report` folder into a
+zip, and on Overleaf choose New Project, Upload Project. Set the compiler to XeLaTeX (Menu,
+Compiler) and press Recompile.
 
 ## How this is graded
 
@@ -377,9 +378,7 @@ A model that scores 95% with no explanation is worth less than one that scores
 
 ## When you are stuck
 
-- Run `uv run python src/check.py`. It works out the answers for itself from
-  the files on disk, so when it disagrees with your own code, one of the two
-  is wrong.
-- If a test fails, give your agent the whole test output, not your summary of
-  it.
+- Ask your agent to run `src/check.py`. It works out the answers for itself
+  from the files on disk, so when it disagrees with your own code, one of the
+  two is wrong.
 - Ask in class. Both Tuesday and Thursday have time for this.

@@ -13,7 +13,8 @@ Usage:
 
 Every run writes its pictures and its model into results/, named after --tag,
 and prints one line at the end that you can paste straight into the
-experiment table in your report.
+experiment table in your report. Everything it prints is also saved in
+results/<tag>_output.txt, for the long report.
 
 It does not touch your web page. When a run gives you the model you want to
 publish, export it:
@@ -22,6 +23,7 @@ publish, export it:
 
 import argparse
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -31,6 +33,25 @@ from evaluate import (accuracy, confusion_matrix, plot_confusion, plot_history,
 from train import build_model, count_trainable, save, train
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class Tee:
+    """Print to the screen and into a file at the same time."""
+
+    def __init__(self, screen, path):
+        self.screen = screen
+        self.file = open(path, "w", encoding="utf-8")
+
+    def write(self, text):
+        self.screen.write(text)
+        self.file.write(text)
+
+    def flush(self):
+        self.screen.flush()
+        self.file.flush()
+
+    def __getattr__(self, name):
+        return getattr(self.screen, name)
 
 
 def main():
@@ -50,6 +71,7 @@ def main():
 
     out_dir = ROOT / "results"
     out_dir.mkdir(exist_ok=True)
+    sys.stdout = Tee(sys.stdout, out_dir / f"{args.tag}_output.txt")
 
     print(f"reading {args.data}")
     started = time.time()
